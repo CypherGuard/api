@@ -1,6 +1,6 @@
 services:
   postgres:
-    container_name: postgres_container
+    container_name: postgres_cg
     image: postgres
     environment:
       POSTGRES_USER: ${POSTGRES_USER:-postgres}
@@ -16,7 +16,7 @@ services:
     restart: unless-stopped
 
   pgadmin:
-    container_name: pgadmin_container
+    container_name: pgadmin_cg
     image: dpage/pgadmin4
     environment:
       PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL:-pgadmin4@pgadmin.org}
@@ -32,6 +32,7 @@ services:
     restart: unless-stopped
 
   api:
+    container_name: api_cg
     build:
       context: api/docker
       dockerfile: Dockerfile
@@ -44,12 +45,12 @@ services:
     env_file:
       - .env
 
-  mailcatcher:
-    container_name: mailcatcher_container
-    image: schickling/mailcatcher
-    ports:
-      - "1080:1080"
-      - "1025:1025"
+#  mailcatcher:
+#    container_name: mailcatcher_container
+#    image: schickling/mailcatcher
+#    ports:
+#      - "1080:1080"
+#      - "1025:1025"
 
 #  lavinmq:
 #    container_name: lavinmq_container
