@@ -1,18 +1,6 @@
 version: '3.7'
 
 services:
-  api:
-    container_name: api_cg
-    build:
-      context: api/docker
-      dockerfile: Dockerfile
-    ports:
-      - '3012:80'
-    volumes:
-      - ./api:/var/www
-    env_file:
-      - .env
-
   postgres:
     image: postgres:16.2
     volumes:
@@ -54,4 +42,4 @@ networks:
 
 volumes:
   postgres_data:
-    driver: local
+    driver: overlay2

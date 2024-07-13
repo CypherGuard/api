@@ -1,188 +1,115 @@
 <?php
 
-use Leaf\Helpers\Password;
-
 return [
-    /*
-    |--------------------------------------------------------------------------
-    | Database table
-    |--------------------------------------------------------------------------
-    |
-    | This is the table that leaf auth will perform authentication
-    | checks on and edit/retrieve users from.
-    |
-    */
-    'DB_TABLE' => 'users',
 
     /*
     |--------------------------------------------------------------------------
-    | Use session
+    | Authentication Defaults
     |--------------------------------------------------------------------------
     |
-    | Use session based authentication instead of the default JWT based auth.
+    | This option defines the default authentication "guard" and password
+    | reset "broker" for your application. You may change these values
+    | as required, but they're a perfect start for most applications.
     |
     */
-    'USE_SESSION' => false,
+
+    'defaults' => [
+        'guard' => env('AUTH_GUARD', 'web'),
+        'passwords' => env('AUTH_PASSWORD_BROKER', 'users'),
+    ],
 
     /*
     |--------------------------------------------------------------------------
-    | Generate timestamps
+    | Authentication Guards
     |--------------------------------------------------------------------------
     |
-    | Automatically generate created_at/updated_at timestamps for register
-    | and update methods
+    | Next, you may define every authentication guard for your application.
+    | Of course, a great default configuration has been defined for you
+    | which utilizes session storage plus the Eloquent user provider.
+    |
+    | All authentication guards have a user provider, which defines how the
+    | users are actually retrieved out of your database or other storage
+    | system used by the application. Typically, Eloquent is utilized.
+    |
+    | Supported: "session"
     |
     */
-    'USE_TIMESTAMPS' => true,
+
+    'guards' => [
+        'web' => [
+            'driver' => 'session',
+            'provider' => 'users',
+        ],
+    ],
 
     /*
     |--------------------------------------------------------------------------
-    | Encode password
+    | User Providers
     |--------------------------------------------------------------------------
     |
-    | Password encode is run when leaf wants to encode passwords on register
-    | This exact method is used by default in Leaf, so you can set it to null
-    | if you want to.
+    | All authentication guards have a user provider, which defines how the
+    | users are actually retrieved out of your database or other storage
+    | system used by the application. Typically, Eloquent is utilized.
     |
-    | You can set your own implementation instead of Password::hash
+    | If you have multiple user tables or models you may configure multiple
+    | providers to represent the model / table. These providers may then
+    | be assigned to any extra authentication guards you have defined.
+    |
+    | Supported: "database", "eloquent"
     |
     */
-    'PASSWORD_ENCODE' => function ($password) {
-        return Password::hash($password);
-    },
+
+    'providers' => [
+        'users' => [
+            'driver' => 'eloquent',
+            'model' => env('AUTH_MODEL', App\Models\User::class),
+        ],
+
+        // 'users' => [
+        //     'driver' => 'database',
+        //     'table' => 'users',
+        // ],
+    ],
 
     /*
     |--------------------------------------------------------------------------
-    | Verify Password
+    | Resetting Passwords
     |--------------------------------------------------------------------------
     |
-    | This function is run to verify the password. This implementation is done
-    | by default, so you can set it to null, and it will still work fine.
+    | These configuration options specify the behavior of Laravel's password
+    | reset functionality, including the table utilized for token storage
+    | and the user provider that is invoked to actually retrieve users.
     |
-    | You can add your own implementation instead of Password::verify
+    | The expiry time is the number of minutes that each reset token will be
+    | considered valid. This security feature keeps tokens short-lived so
+    | they have less time to be guessed. You may change this as needed.
+    |
+    | The throttle setting is the number of seconds a user must wait before
+    | generating more password reset tokens. This prevents the user from
+    | quickly generating a very large amount of password reset tokens.
     |
     */
-    'PASSWORD_VERIFY' => function ($password, $hashedPassword) {
-        return Password::verify($password, $hashedPassword);
-    },
+
+    'passwords' => [
+        'users' => [
+            'provider' => 'users',
+            'table' => env('AUTH_PASSWORD_RESET_TOKEN_TABLE', 'password_reset_tokens'),
+            'expire' => 60,
+            'throttle' => 60,
+        ],
+    ],
 
     /*
     |--------------------------------------------------------------------------
-    | Password Key
+    | Password Confirmation Timeout
     |--------------------------------------------------------------------------
     |
-    | The default password key. Leaf will expect this key to hold passwords
-    | in your database.
+    | Here you may define the amount of seconds before a password confirmation
+    | window expires and users are asked to re-enter their password via the
+    | confirmation screen. By default, the timeout lasts for three hours.
     |
     */
-    'PASSWORD_KEY' => 'password',
 
-    /*
-    |--------------------------------------------------------------------------
-    | Hide id
-    |--------------------------------------------------------------------------
-    |
-    | Hide id field from user object returned in login, register and update
-    |
-    */
-    'HIDE_ID' => true,
+    'password_timeout' => env('AUTH_PASSWORD_TIMEOUT', 10800),
 
-    /*
-    |--------------------------------------------------------------------------
-    | Hide password
-    |--------------------------------------------------------------------------
-    |
-    | Hide password from user object returned in login, register and update
-    |
-    */
-    'HIDE_PASSWORD' => true,
-
-    /*
-    |--------------------------------------------------------------------------
-    | Login params error
-    |--------------------------------------------------------------------------
-    |
-    | Error to show when the login params aren't found in db
-    |
-    */
-    'LOGIN_PARAMS_ERROR' => 'Username not registered!',
-
-    /*
-    |--------------------------------------------------------------------------
-    | Password error
-    |--------------------------------------------------------------------------
-    |
-    | Error to show when the login password is wrong
-    |
-    */
-    'LOGIN_PASSWORD_ERROR' => 'Password is incorrect!',
-
-    /*
-    |--------------------------------------------------------------------------
-    | Session on register
-    |--------------------------------------------------------------------------
-    |
-    | If true, a session will be created on a successful registration, else
-    | you it'll be created on login rather.
-    |
-    */
-    'SESSION_ON_REGISTER' => false,
-
-    /*
-    |--------------------------------------------------------------------------
-    | Login page route
-    |--------------------------------------------------------------------------
-    */
-    'GUARD_LOGIN' => '/auth/login',
-
-    /*
-    |--------------------------------------------------------------------------
-    | Register page route
-    |--------------------------------------------------------------------------
-    */
-    'GUARD_REGISTER' => '/auth/register',
-
-    /*
-    |--------------------------------------------------------------------------
-    | Logout route
-    |--------------------------------------------------------------------------
-    */
-    'GUARD_LOGOUT' => '/auth/logout',
-
-    /*
-    |--------------------------------------------------------------------------
-    | Home page route
-    |--------------------------------------------------------------------------
-    */
-    'GUARD_HOME' => '/home',
-
-    /*
-    |--------------------------------------------------------------------------
-    | JWT + Session
-    |--------------------------------------------------------------------------
-    |
-    | Add an auth token to the auth session?
-    |
-    */
-    'SAVE_SESSION_JWT' => false,
-
-    /*
-    |--------------------------------------------------------------------------
-    | JWT Token Secret
-    |--------------------------------------------------------------------------
-    |
-    | Secret string to encode JWT
-    |
-    */
-    'TOKEN_SECRET' => '@_leaf$0Secret!',
-
-    /*
-    |--------------------------------------------------------------------------
-    | JWT Lifetime
-    |--------------------------------------------------------------------------
-    |
-    | How long should JWT be valid for?
-    |
-    */
-    'TOKEN_LIFETIME' => 60 * 60 * 24 * 365,
 ];
