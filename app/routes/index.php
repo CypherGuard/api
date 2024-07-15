@@ -1,5 +1,16 @@
 <?php
 
+function getDateToday(): string
+{
+    return date('Y-m-d');
+}
+
+Leaf\Config::set([
+    'log.enabled' => true,
+    'log.dir' => __DIR__ . '/logs/',
+    'log.file' => getDateToday() . '_crash_logs.log',
+]);
+
 /*
 |--------------------------------------------------------------------------
 | Set up 404 handler

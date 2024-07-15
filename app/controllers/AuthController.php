@@ -19,32 +19,35 @@ class AuthController extends Controller {
         $password = request()->get('password');
 
         $data = auth()->login([
-            'username' => $email,
+            'email' => $email,
             'password' => $password
         ]);
 
-        if ($data) {
-            // user is authenticated
-            $token = $data['token'];
-            $user = $data['user'];
-            return response()->json(['token' => $token, 'user' => $user]);
-        } else {
-            // user is not authenticated
+        if (!$data) {
             $errors = auth()->errors();
-            return response()->json(['errors' => $errors]);
+            return response()->json(['errors' => $errors], 401);
         }
+
+        $token = $data['token'];
+        return response()->json(['token' => $token], 200);
     }
 
     public function register() {
         $email = request()->get('email');
         $password = request()->get('password');
+        $username = request()->get('username');
 
         $user = auth()->register([
             'email' => $email,
             'password' => $password,
-            'username' => 'user'.rand(1, 1000),
+            'username' => $username,
             'fullname' => 'User '.rand(1, 1000)
         ]);
+
+        if (!$user) {
+            $errors = auth()->errors();
+            return response()->json(['errors' => $errors], 401);
+        }
 
         return response()->json(['sucess' => true]);
     }

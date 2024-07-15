@@ -25,15 +25,4 @@ if ($uri !== '/' && file_exists(__DIR__ . '/public' . $uri)) {
     return false;
 }
 
-function getDateToday(): string
-{
-    return date('Y-m-d');
-}
-
-Leaf\Config::set([
-    'log.enabled' => true,
-    'log.dir' => __DIR__ . '/logs/',
-    'log.file' => getDateToday() . '_crash_logs.log',
-]);
-
 require_once __DIR__ . '/public/index.php';
