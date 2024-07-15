@@ -1,126 +1,153 @@
 <?php
 
+/*
+|--------------------------------------------------------------------------
+| App Config
+|--------------------------------------------------------------------------
+|
+| This file contains the configuration for your app. Most of this
+| configuration is for Leaf's core but has been made available
+| to you for your convenience.
+|
+| You can link your environment variables to this file by using the
+| _env() helper function. This function will return the value set in
+| your .env file. You can use the below settings as a reference.
+|
+*/
+
 return [
+    /*
+    |--------------------------------------------------------------------------
+    | Place app in maintainance mode
+    |--------------------------------------------------------------------------
+    |
+    | Replacement for earlier mode=down. You can set this to true to place
+    | your app in a maintainance like state. It will display Leaf's default
+    | app down page if a custom handler is not set.
+    |
+    | See: https://leafphp.dev/docs/config/settings.html#app-down
+    |
+    */
+    'app.down' => _env('APP_DOWN', false),
 
     /*
     |--------------------------------------------------------------------------
-    | Application Name
+    | App debugging
     |--------------------------------------------------------------------------
     |
-    | This value is the name of your application, which will be used when the
-    | framework needs to place the application's name in a notification or
-    | other UI elements where an application name needs to be displayed.
+    | If debugging is enabled, Leaf will use its built-in error handler to
+    | display diagnostic information for uncaught Exceptions, else it will
+    | display a bare error page usable in production. You can set a
+    | custom error page to display using `$app->setError`.
+    |
+    | You might want to turn this off in production.
     |
     */
-
-    'name' => env('APP_NAME', 'Laravel'),
+    'debug' => _env('APP_DEBUG', true),
 
     /*
     |--------------------------------------------------------------------------
-    | Application Environment
+    | Log directory
     |--------------------------------------------------------------------------
     |
-    | This value determines the "environment" your application is currently
-    | running in. This may determine how you prefer to configure various
-    | services the application utilizes. Set this in your ".env" file.
+    | This tells leaf which directory to save and look for logs.
     |
     */
-
-    'env' => env('APP_ENV', 'production'),
+    'log.dir' => 'storage/logs/',
 
     /*
     |--------------------------------------------------------------------------
-    | Application Debug Mode
+    | Log Enabled
     |--------------------------------------------------------------------------
     |
-    | When your application is in debug mode, detailed error messages with
-    | stack traces will be shown on every error that occurs within your
-    | application. If disabled, a simple generic error page is shown.
+    | This enables or disables Leaf’s logger. Note that if log.enabled is
+    | set to false. Leaf will skip initializing anything related to logs,
+    | as such, you won't have access to $app->logger(),
+    | $app->log or $app->logWriter.
     |
     */
-
-    'debug' => (bool) env('APP_DEBUG', false),
+    'log.enabled' => true,
 
     /*
     |--------------------------------------------------------------------------
-    | Application URL
+    | Log file
     |--------------------------------------------------------------------------
     |
-    | This URL is used by the console to properly generate URLs when using
-    | the Artisan command line tool. You should set this to the root of
-    | the application so that it's available within Artisan commands.
+    | This setting tells leaf which file to write logs to.
     |
     */
-
-    'url' => env('APP_URL', 'http://localhost'),
+    'log.file' => 'app.log',
 
     /*
     |--------------------------------------------------------------------------
-    | Application Timezone
+    | Log level
     |--------------------------------------------------------------------------
     |
-    | Here you may specify the default timezone for your application, which
-    | will be used by the PHP date and date-time functions. The timezone
-    | is set to "UTC" by default as it is suitable for most use cases.
+    | Leaf has these log levels:
+    |
+    | - \Leaf\Log::EMERGENCY
+    | - \Leaf\Log::ALERT
+    | - \Leaf\Log::CRITICAL
+    | - \Leaf\Log::ERROR
+    | - \Leaf\Log::WARN
+    | - \Leaf\Log::NOTICE
+    | - \Leaf\Log::INFO
+    | - \Leaf\Log::DEBUG
     |
     */
-
-    'timezone' => env('APP_TIMEZONE', 'UTC'),
+    'log.level' => \Leaf\Log::DEBUG,
 
     /*
     |--------------------------------------------------------------------------
-    | Application Locale Configuration
+    | Log open
     |--------------------------------------------------------------------------
     |
-    | The application locale determines the default locale that will be used
-    | by Laravel's translation / localization methods. This option can be
-    | set to any locale for which you plan to have translation strings.
+    | Takes in a boolean and determines whether Leaf should create
+    | the specified log file if it doesn't exist.
     |
     */
-
-    'locale' => env('APP_LOCALE', 'en'),
-
-    'fallback_locale' => env('APP_FALLBACK_LOCALE', 'en'),
-
-    'faker_locale' => env('APP_FAKER_LOCALE', 'en_US'),
+    'log.open' => true,
 
     /*
     |--------------------------------------------------------------------------
-    | Encryption Key
+    | Log writer
     |--------------------------------------------------------------------------
     |
-    | This key is utilized by Laravel's encryption services and should be set
-    | to a random, 32 character string to ensure that all encrypted values
-    | are secure. You should do this prior to deploying the application.
+    | Use a custom log writer to direct logged messages
+    | to the appropriate output destination.
     |
     */
-
-    'cipher' => 'AES-256-CBC',
-
-    'key' => env('APP_KEY'),
-
-    'previous_keys' => [
-        ...array_filter(
-            explode(',', env('APP_PREVIOUS_KEYS', ''))
-        ),
-    ],
+    'log.writer' => null,
 
     /*
     |--------------------------------------------------------------------------
-    | Maintenance Mode Driver
+    | Mode
     |--------------------------------------------------------------------------
     |
-    | These configuration options determine the driver used to determine and
-    | manage Laravel's "maintenance mode" status. The "cache" driver will
-    | allow maintenance mode to be controlled across multiple machines.
-    |
-    | Supported drivers: "file", "cache"
+    | This is an identifier for the application’s current mode of operation.
+    | The mode does not affect a Leaf application’s internal functionality.
     |
     */
+    'mode' => 'development',
 
-    'maintenance' => [
-        'driver' => env('APP_MAINTENANCE_DRIVER', 'file'),
-        'store' => env('APP_MAINTENANCE_STORE', 'database'),
-    ],
+    /*
+    |--------------------------------------------------------------------------
+    | Views path
+    |--------------------------------------------------------------------------
+    |
+    | The relative or absolute path to the filesystem directory that
+    | contains your Leaf application’s view files.
+    |
+    */
+    'views.path' => ViewsPath(null, false),
 
+    /*
+    |--------------------------------------------------------------------------
+    | views cache path
+    |--------------------------------------------------------------------------
+    |
+    | This config tells leaf where to save cached and compiled views.
+    |
+    */
+    'views.cachePath' => StoragePath('framework/views')
 ];
