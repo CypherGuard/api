@@ -33,7 +33,8 @@ class VaultController extends Controller
             ->insert('vaults')
             ->params([
                 'name' => $name,
-                'owner_id' => $id
+                'owner_id' => $id,
+                'shared_id' => null
             ])
             ->execute();
 
@@ -60,6 +61,16 @@ class VaultController extends Controller
     public function destroy($id)
     {
         $vault = db()->delete('vaults', ['id' => $id]);
+        return response()->json($vault);
+    }
+
+    public function add_user($id)
+    {
+        $user_id = request()->get('user_id');
+        $vault = db()->select('vaults')->params(['id' => $id])->first();
+        $shared_users = $vault['shared_users'] ?? [];
+        $shared_users[] = $user_id;
+        $vault = db()->update('vaults', ['shared_users' => $shared_users], ['id' => $id]);
         return response()->json($vault);
     }
 

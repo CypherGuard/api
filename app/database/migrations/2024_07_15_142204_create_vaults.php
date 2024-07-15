@@ -17,6 +17,8 @@ class CreateVaults extends Database
                 $table->increments('id');
                 $table->string('name')->unique();
                 $table->integer('owner_id');
+                $table->foreign('owner_id')->references('id')->on('users');
+                $table->string('shared_id')->nullable();
                 $table->timestamps();
             });
         endif;

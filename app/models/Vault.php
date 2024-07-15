@@ -10,7 +10,8 @@ class Vault extends Model
      */
     protected $fillable = [
         'name',
-        'owner_id'
+        'owner_id',
+        'shared_users'
     ];
 
     /**
@@ -29,5 +30,7 @@ class Vault extends Model
      * The attributes that should be cast to native types.
      * @var array
      */
-    protected $casts = [];
+    protected $casts = [
+        'shared_id' => 'array',
+    ];
 }
