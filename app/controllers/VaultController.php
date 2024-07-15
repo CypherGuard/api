@@ -26,8 +26,22 @@ class VaultController extends Controller
 
     public function store()
     {
-        $name = $this->request->get('name');
-        $vault = db()->insert('vaults', ['name' => $name]);
+        $name = request()->get('name');
+        $query = db()
+            ->insert('vaults')
+            ->params(['name' => $name])
+            ->execute();
+
+        if (!$query) {
+            return response()->json(['error' => 'An error occurred'], 400);
+        }
+
+        $vault = db()->select('vaults')->where(['id' => db()->lastInsertId()])->first();
+
+        if (!$vault) {
+            return response()->json(['error' => 'An error occurred'], 400);
+        }
+
         return response()->json($vault);
     }
 

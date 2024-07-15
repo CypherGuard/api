@@ -10,7 +10,6 @@ class AuthController extends Controller {
         db()->autoConnect();
         auth()->dbConnection(db()->connection());
         auth()->config('DB_TABLE', 'users');
-        $this->request = new Request;
     }
 
     public function login()
