@@ -16,6 +16,7 @@ class CreateVaults extends Database
             static::$capsule::schema()->create('vaults', function (Blueprint $table) {
                 $table->increments('id');
                 $table->string('name')->unique();
+                $table->integer('owner_id');
                 $table->timestamps();
             });
         endif;

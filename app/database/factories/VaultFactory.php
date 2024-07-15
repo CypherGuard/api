@@ -16,6 +16,7 @@ class VaultFactory extends Factory
     {
         return [
             'name' => strtolower($this->faker->name),
+            'owner_id' => $this->faker->randomDigitNotNull
         ];
     }
 }

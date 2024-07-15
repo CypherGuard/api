@@ -1,7 +1,20 @@
 <?php
 
-app()->match('GET', '/vaults', "VaultController@index");
-app()->match('GET', '/vaults/{id}', "VaultController@show");
-app()->match('POST', '/vaults', "VaultController@store");
-app()->match('PUT', '/vaults/{id}', "VaultController@update");
-app()->match('DELETE', '/vaults/{id}', "VaultController@destroy");
+use App\Middleware\AuthMiddleware;
+
+$middleware = function () {
+    db()->autoConnect();
+    $user = auth()->user();
+
+    if (!$user) {
+        return response()->json(['error' => 'Unauthorized'], 401);
+    }
+};
+
+app()->group('/vaults', ['middleware' => $middleware, function () {
+    app()->match('GET', '/', "VaultController@index");
+    app()->match('GET', '/{id}', "VaultController@show");
+    app()->match('POST', '/', "VaultController@store");
+    app()->match('PUT', '/{id}', "VaultController@update");
+    app()->match('DELETE', '/{id}', "VaultController@destroy");
+}]);

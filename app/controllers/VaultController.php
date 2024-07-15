@@ -8,13 +8,12 @@ class VaultController extends Controller
 {
     public function __construct() {
         parent::__construct();
-        db()->autoConnect();
         $this->request = new Request;
     }
 
     public function index()
     {
-        $vaults = db()->select('vaults');
+        $vaults = db()->select('vaults')->fetchAll();
         return response()->json($vaults);
     }
 
@@ -27,9 +26,15 @@ class VaultController extends Controller
     public function store()
     {
         $name = request()->get('name');
+
+        $id = auth()->user()["id"];
+
         $query = db()
             ->insert('vaults')
-            ->params(['name' => $name])
+            ->params([
+                'name' => $name,
+                'owner_id' => $id
+            ])
             ->execute();
 
         if (!$query) {

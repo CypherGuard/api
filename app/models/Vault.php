@@ -10,6 +10,7 @@ class Vault extends Model
      */
     protected $fillable = [
         'name',
+        'owner_id'
     ];
 
     /**
