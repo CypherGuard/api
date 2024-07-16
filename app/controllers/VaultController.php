@@ -218,4 +218,40 @@ class VaultController extends Controller
 
         return response()->json($users);
     }
+
+    public function transfer_to_user($id)
+    {
+        $data = request()->try(['username']);
+        $user_id = auth()->user()['id'];
+
+        if (empty($data['username'])) {
+            return response()->json(['error' => 'No username provided'], 400);
+        }
+
+        $transfer_user = db()->select('users')->where(['username' => $data['username']])->first();
+
+        if (!$transfer_user) {
+            return response()->json(['error' => 'User not found'], 404);
+        }
+
+        $vault = db()->select('vaults')->where(['id' => $id, 'owner_id' => $user_id])->first();
+
+        if (!$vault) {
+            return response()->json(['error' => 'Vault not found'], 404);
+        }
+
+        db()
+            ->update('vaults')
+            ->params(['owner_id' => $transfer_user['id'], 'shared_id' => ''])
+            ->where(['id' => $id, 'owner_id' => $user_id])
+            ->execute();
+
+        $vault = db()->select('vaults')->where(['id' => $id, 'owner_id' => $transfer_user['id']])->first();
+
+        if (!$vault) {
+            return response()->json(['error' => 'An error occurred'], 400);
+        }
+
+        return response()->json($vault);
+    }
 }
