@@ -115,7 +115,7 @@ class VaultController extends Controller
 
     public function add_user($id)
     {
-        $data = request()->postData(['username']);
+        $data = request()->try(['username']);
         $user_id = auth()->user()['id'];
 
         if (empty($data['username'])) {
