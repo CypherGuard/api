@@ -1,17 +1,16 @@
 <?php
 
-app()->get('/users', function () {
-    response()->json(['message' => 'Congrats!! You\'re on Leaf API']);
-});
+use App\Middleware\AuthMiddleware;
 
-app()->get('/users/{id}', function ($id) {
-    response()->json(['message' => 'Congrats!! You\'re on Leaf API']);
-});
+$middleware = function () {
+    db()->autoConnect();
+    $user = auth()->user();
 
-app()->post('/users', function () {
-    response()->json(['message' => 'Congrats!! You\'re on Leaf API']);
-});
+    if (!$user) {
+        return response()->json(['error' => 'Unauthorized'], 401);
+    }
+};
 
-app()->put('/users/{id}', function ($id) {
-    response()->json(['message' => 'Congrats!! You\'re on Leaf API']);
-});
+app()->group('/user', ['middleware' => $middleware, function () {
+    app()->match('GET', '/me', "UserController@me");
+}]);
