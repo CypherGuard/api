@@ -12,10 +12,11 @@ $middleware = function () {
 };
 
 app()->group('/vaults', ['middleware' => $middleware, function () {
-    app()->match('GET', '/', "VaultController@index");
+    app()->match('POST', '/share/{id}', "VaultController@add_user");
+    app()->match('DELETE', '/share/{id}', "VaultController@remove_user");
     app()->match('GET', '/{id}', "VaultController@show");
-    app()->match('POST', '/', "VaultController@store");
     app()->match('PUT', '/{id}', "VaultController@update");
     app()->match('DELETE', '/{id}', "VaultController@destroy");
-    app()->match('POST', '/share/{id}', "VaultController@add_user");
+    app()->match('POST', '/', "VaultController@store");
+    app()->match('GET', '/', "VaultController@index");
 }]);
