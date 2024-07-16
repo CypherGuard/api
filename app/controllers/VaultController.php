@@ -14,7 +14,12 @@ class VaultController extends Controller
     public function index()
     {
         $user_id = auth()->user()['id'];
-        $vaults = db()->select('vaults')->where(['owner_id' => $user_id])->orderBy('id')->fetchAll();
+        $vaults = db()
+            ->select('vaults')
+            ->where(['owner_id' => $user_id])
+            ->orWhere('shared_id', 'LIKE', "%$user_id%")
+            ->orderBy('id')
+            ->fetchAll();
         return response()->json($vaults);
     }
 
@@ -105,8 +110,18 @@ class VaultController extends Controller
 
     public function add_user($id)
     {
-        $data = request()->postData(['user_id']);
+        $data = request()->postData(['username']);
         $user_id = auth()->user()['id'];
+
+        if (empty($data['username'])) {
+            return response()->json(['error' => 'No username provided'], 400);
+        }
+
+        $sharing_user_id = db()->select('users')->where(['username' => $data['username']])->first();
+
+        if (!$sharing_user_id) {
+            return response()->json(['error' => 'User not found'], 404);
+        }
 
         $vault = db()->select('vaults')->where(['id' => $id, 'owner_id' => $user_id])->first();
 
@@ -116,11 +131,11 @@ class VaultController extends Controller
 
         $shared_users = explode(',', $vault['shared_id']) ?? [];
 
-        if (in_array($data['user_id'], $shared_users)) {
+        if (in_array($sharing_user_id['id'], $shared_users)) {
             return response()->json(['error' => 'User already has access to this vault'], 400);
         }
 
-        $shared_users[] = $data['user_id'];
+        $shared_users[] = $sharing_user_id['id'];
 
         db()
             ->update('vaults')
