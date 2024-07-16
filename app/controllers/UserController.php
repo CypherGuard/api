@@ -3,14 +3,19 @@
 namespace App\Controllers;
 
 use App\Models\User;
+use Leaf\Http\Request;
 
 class UserController extends Controller {
-    public function me($id)
+    public function __construct() {
+        parent::__construct();
+    }
+
+    public function me()
     {
         $user_id = auth()->user()['id'];
 
         $user = db()
-            ->select('users')
+            ->select('users', "id, username, fullname, email")
             ->where(['id' => $user_id])
             ->first();
 

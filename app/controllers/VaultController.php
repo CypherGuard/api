@@ -8,7 +8,6 @@ class VaultController extends Controller
 {
     public function __construct() {
         parent::__construct();
-        $this->request = new Request;
     }
 
     public function index()

@@ -7,9 +7,6 @@ use Leaf\Http\Request;
 class AuthController extends Controller {
     public function __construct() {
         parent::__construct();
-        db()->autoConnect();
-        auth()->dbConnection(db()->connection());
-        auth()->config('DB_TABLE', 'users');
     }
 
     public function login()

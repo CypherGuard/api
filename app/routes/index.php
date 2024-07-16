@@ -1,5 +1,10 @@
 <?php
 
+
+$con = db()->autoConnect();
+auth()->dbConnection($con);
+auth()->config('DB_TABLE', 'users');
+
 function getDateToday(): string
 {
     return date('Y-m-d');
