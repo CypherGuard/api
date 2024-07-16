@@ -61,7 +61,7 @@ class VaultController extends Controller
     public function update($id)
     {
         $user_id = auth()->user()['id'];
-        $data = request()->try(['name', 'owner_id']);
+        $data = request()->try(['name']);
 
         if (empty($data)) {
             return response()->json(['error' => 'No data to update'], 400);
@@ -105,12 +105,31 @@ class VaultController extends Controller
 
     public function add_user($id)
     {
-        $user_id = request()->get('user_id');
-        $vault = db()->select('vaults')->params(['id' => $id])->first();
-        $shared_users = $vault['shared_users'] ?? [];
-        $shared_users[] = $user_id;
-        $vault = db()->update('vaults', ['shared_users' => $shared_users], ['id' => $id]);
+        $data = request()->postData(['user_id']);
+        $user_id = auth()->user()['id'];
+
+        $vault = db()->select('vaults')->where(['id' => $id, 'owner_id' => $user_id])->first();
+
+        if (!$vault) {
+            return response()->json(['error' => 'Vault not found'], 404);
+        }
+
+        $shared_users = explode(',', $vault['shared_id']) ?? [];
+
+        if (in_array($data['user_id'], $shared_users)) {
+            return response()->json(['error' => 'User already has access to this vault'], 400);
+        }
+
+        $shared_users[] = $data['user_id'];
+
+        db()
+            ->update('vaults')
+            ->params(['shared_id' => implode(',', $shared_users)])
+            ->where(['id' => $id, 'owner_id' => $user_id])
+            ->execute();
+
+        $vault = db()->select('vaults')->where(['id' => $id, 'owner_id' => $user_id])->first();
+
         return response()->json($vault);
     }
-
 }
