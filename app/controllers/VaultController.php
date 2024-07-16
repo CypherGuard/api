@@ -208,6 +208,10 @@ class VaultController extends Controller
             return response()->json(['error' => 'Vault not found'], 404);
         }
 
+        if ($vault['shared_id'] == "") {
+            return response()->json([]);
+        }
+
         $users = db()
             ->query("SELECT username, fullname, email, id FROM users WHERE id IN (" . $vault['shared_id'] . ")")
             ->fetchAll();
