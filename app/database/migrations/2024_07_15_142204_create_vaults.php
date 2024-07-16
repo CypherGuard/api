@@ -15,7 +15,7 @@ class CreateVaults extends Database
         if (!static::$capsule::schema()->hasTable('vaults')) :
             static::$capsule::schema()->create('vaults', function (Blueprint $table) {
                 $table->increments('id');
-                $table->string('name')->unique();
+                $table->string('name');
                 $table->integer('owner_id');
                 $table->foreign('owner_id')->references('id')->on('users');
                 $table->string('shared_id')->nullable();

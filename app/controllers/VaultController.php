@@ -13,13 +13,20 @@ class VaultController extends Controller
 
     public function index()
     {
-        $vaults = db()->select('vaults')->fetchAll();
+        $user_id = auth()->user()['id'];
+        $vaults = db()->select('vaults')->where(['owner_id' => $user_id])->fetchAll();
         return response()->json($vaults);
     }
 
     public function show($id)
     {
-        $vault = db()->select('vaults', ['id' => $id]);
+        $user_id = auth()->user()['id'];
+        $vault = db()->select('vaults')->where(['id' => $id, 'owner_id' => $user_id])->first();
+
+        if (!$vault) {
+            return response()->json(['error' => 'Vault not found'], 404);
+        }
+
         return response()->json($vault);
     }
 
@@ -27,13 +34,13 @@ class VaultController extends Controller
     {
         $name = request()->get('name');
 
-        $id = auth()->user()["id"];
+        $user_id = auth()->user()['id'];
 
         $query = db()
             ->insert('vaults')
             ->params([
                 'name' => $name,
-                'owner_id' => $id,
+                'owner_id' => $user_id,
                 'shared_id' => null
             ])
             ->execute();
@@ -53,15 +60,47 @@ class VaultController extends Controller
 
     public function update($id)
     {
-        $data = $this->request->all();
-        $vault = db()->update('vaults', $data, ['id' => $id]);
+        $user_id = auth()->user()['id'];
+        $data = request()->try(['name', 'owner_id']);
+
+        if (empty($data)) {
+            return response()->json(['error' => 'No data to update'], 400);
+        }
+
+        db()
+            ->update('vaults')
+            ->params($data)
+            ->where(['id' => $id, 'owner_id' => $user_id])
+            ->execute();
+
+        $vault = db()->select('vaults')->where(['id' => $id])->first();
+
+        if (!$vault) {
+            return response()->json(['error' => 'An error occurred'], 400);
+        }
+
         return response()->json($vault);
     }
 
     public function destroy($id)
     {
-        $vault = db()->delete('vaults', ['id' => $id]);
-        return response()->json($vault);
+        $user_id = auth()->user()['id'];
+
+        $vault = db()->select('vaults')->where(['id' => $id, 'owner_id' => $user_id])->first();
+
+        if (!$vault) {
+            return response()->json(['error' => 'Vault not found'], 404);
+        }
+
+        db()->delete('vaults')->where(['id' => $id, 'owner_id' => $user_id])->execute();
+
+        $vault = db()->select('vaults')->where(['id' => $id, 'owner_id' => $user_id])->first();
+
+        if ($vault) {
+            return response()->json(['error' => 'Vault not deleted'], 400);
+        }
+
+        return response()->json(['message' => 'Vault deleted successfully']);
     }
 
     public function add_user($id)
