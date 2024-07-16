@@ -14,7 +14,7 @@ class VaultController extends Controller
     public function index()
     {
         $user_id = auth()->user()['id'];
-        $vaults = db()->select('vaults')->where(['owner_id' => $user_id])->fetchAll();
+        $vaults = db()->select('vaults')->where(['owner_id' => $user_id])->orderBy('id')->fetchAll();
         return response()->json($vaults);
     }
 
