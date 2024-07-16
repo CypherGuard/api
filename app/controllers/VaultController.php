@@ -17,7 +17,7 @@ class VaultController extends Controller
         $vaults = db()
             ->select('vaults')
             ->where(['owner_id' => $user_id])
-            ->orWhere('shared_id', 'LIKE', "%$user_id%")
+            ->orWhere('shared_id', '=', $user_id)
             ->orderBy('id')
             ->fetchAll();
         return response()->json($vaults);
@@ -26,7 +26,13 @@ class VaultController extends Controller
     public function show($id)
     {
         $user_id = auth()->user()['id'];
-        $vault = db()->select('vaults')->where(['id' => $id, 'owner_id' => $user_id])->first();
+
+        $vault = db()
+            ->select('vaults')
+            ->where(['id' => $id, 'owner_id' => $user_id])
+            ->orWhere(['id' => $id])
+            ->where('shared_id', '=', "$user_id")
+            ->first();
 
         if (!$vault) {
             return response()->json(['error' => 'Vault not found'], 404);
