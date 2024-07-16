@@ -14,6 +14,8 @@ $middleware = function () {
 app()->group('/vaults', ['middleware' => $middleware, function () {
     app()->match('POST', '/share/{id}', "VaultController@add_user");
     app()->match('DELETE', '/share/{id}', "VaultController@remove_user");
+    app()->match('GET', '/share/{id}', "VaultController@get_user");
+
     app()->match('GET', '/{id}', "VaultController@show");
     app()->match('PUT', '/{id}', "VaultController@update");
     app()->match('DELETE', '/{id}', "VaultController@destroy");

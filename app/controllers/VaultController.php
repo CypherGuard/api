@@ -135,7 +135,7 @@ class VaultController extends Controller
             return response()->json(['error' => 'Vault not found'], 404);
         }
 
-        $shared_users = explode(',', $vault['shared_id'] ?? '') ?? [];
+        $shared_users = $vault['shared_id'] != "" ? explode(',', $vault['shared_id']) ?? [] : [];
 
         if (in_array($sharing_user_id['id'], $shared_users)) {
             return response()->json(['error' => 'User already has access to this vault'], 400);
@@ -192,5 +192,27 @@ class VaultController extends Controller
         $vault = db()->select('vaults')->where(['id' => $id, 'owner_id' => $user_id])->first();
 
         return response()->json($vault);
+    }
+
+    public function get_user($id)
+    {
+        $user_id = auth()->user()['id'];
+
+        $vault = db()
+            ->select('vaults')
+            ->where(['id' => $id, 'owner_id' => $user_id])
+            ->orWhere(['id' => $id])
+            ->where('shared_id', '=', "$user_id")
+            ->first();
+
+        if (!$vault) {
+            return response()->json(['error' => 'Vault not found'], 404);
+        }
+
+        $users = db()
+            ->query("SELECT username, fullname, email, id FROM users WHERE id IN (" . $vault['shared_id'] . ")")
+            ->fetchAll();
+
+        return response()->json($users);
     }
 }
