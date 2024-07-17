@@ -28,7 +28,6 @@ class LoginController extends Controller
 
         $logins = array_map(function($login) {
             $crypt = new SymmetricEncryption();
-            $login['name'] = $crypt->decryptString($login['name']);
             $login['username'] = $crypt->decryptString($login['username']);
             $login['password'] = $crypt->decryptString($login['password']);
             $login['url'] = $crypt->decryptString($login['url']);
@@ -60,6 +59,13 @@ class LoginController extends Controller
             return response()->json(['error' => 'Login not found'], 404);
         }
 
+        $crypt = new SymmetricEncryption();
+        $login['username'] = $crypt->decryptString($login['username']);
+        $login['password'] = $crypt->decryptString($login['password']);
+        $login['url'] = $crypt->decryptString($login['url']);
+        $login['totp'] = $crypt->decryptString($login['totp']);
+        $login['notes'] = $crypt->decryptString($login['notes']);
+
         return response()->json($login);
     }
 
@@ -79,7 +85,7 @@ class LoginController extends Controller
 
         $crypt = new SymmetricEncryption();
         $login = [
-            'name' => $crypt->encryptString($data['name']),
+            'name' => $data['name'],
             'username' => $crypt->encryptString($data['username']),
             'password' => $crypt->encryptString($data['password']),
             'url' => $crypt->encryptString($data['url']),
@@ -111,8 +117,7 @@ class LoginController extends Controller
 
     public function update($vid, $id)
     {
-        $user_id = auth()->user()['id'];
-        $data = request()->try(['name', 'username', 'password', 'url', 'notes']);
+        $data = request()->try(['name', 'username', 'password', 'url', 'notes', 'totp']);
 
         if (empty($data)) {
             return response()->json(['error' => 'No data provided'], 400);
@@ -136,24 +141,39 @@ class LoginController extends Controller
             return response()->json(['error' => 'Login not found'], 404);
         }
 
+        $crypt = new SymmetricEncryption();
+        $login = [
+            'name' => $data['name'],
+            'username' => $crypt->encryptString($data['username']),
+            'password' => $crypt->encryptString($data['password']),
+            'url' => $crypt->encryptString($data['url']),
+            'notes' => $crypt->encryptString($data['notes']),
+            'totp' => $crypt->encryptString($data['totp'])
+        ];
+
         db()
             ->update('logins')
-            ->params($data)
+            ->set([
+                'name' => $login['name'],
+                'username' => $login['username'],
+                'password' => $login['password'],
+                'url' => $login['url'],
+                'notes' => $login['notes'],
+                'totp' => $login['totp']
+            ])
             ->where([
                 'id' => $id,
                 'vault_id' => $vid
             ])
             ->execute();
 
-        $login = db()
-            ->select('logins')
-            ->where([
-                'id' => $id,
-                'vault_id' => $vid
-            ])
-            ->first();
+        $login_updated = db()->select('logins')->where(['id' => $id])->first();
 
-        return response()->json($login);
+        if (!$login_updated) {
+            return response()->json(['error' => 'An error occurred'], 400);
+        }
+
+        return response()->json($login_updated);
     }
 
     public function destroy($vid, $id)
