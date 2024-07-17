@@ -2,6 +2,8 @@
 
 namespace App\Utils;
 
+use Exception;
+
 class SymmetricEncryption {
     private $key;
     private $cipher = 'AES-256-CBC';
