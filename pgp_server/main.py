@@ -1,36 +1,23 @@
-import pika, os, sys
-from dotenv import load_dotenv
 
-load_dotenv()
+import threading
+from multiprocessing import Process
 
-# Access the CLOUDAMQP_URL environment variable and parse it (fallback to localhost)
-url = os.environ.get('CLOUDAMQP_URL', 'amqp://guest:guest@localhost:5672/%2f')
+from endpoints.decrypt_data import DecryptDataConsumer
+from endpoints.encrypt_data import EncryptDataConsumer
 
-# Create a connection
-params = pika.URLParameters(url)
-connection = pika.BlockingConnection(params)
-print("[✅] Connection over channel established")
+if __name__ == '__main__':
+    print("[✅] Starting the server")
+    subscriber_list = []
+    print("[✅] Add the endpoints to the subscriber list")
+    subscriber_list.append(EncryptDataConsumer())
+    subscriber_list.append(DecryptDataConsumer())
 
-# Create a channel
-channel = connection.channel()
-channel.queue_declare(queue="pgp")
+    process_list = []
+    for sub in subscriber_list:
+        print(f"[✅] Starting the endpoint {sub.queue}")
+        process = Process(target=sub.run)
+        process.start()
+        process_list.append(process)
 
-def callback(ch, method, properties, body):
-    print(f"[✅] Received #{ body }")
-
-# Start consuming
-channel.basic_consume(
-    "pgp",
-    callback,
-    auto_ack=True,
-)
-
-try:
-  print("\n[❎] Waiting for messages. To exit press CTRL+C \n")
-  channel.start_consuming()
-except Exception as e:
-  print(f"Error: #{e}")
-  try:
-    sys.exit(0)
-  except SystemExit:
-    os._exit(0)
+    for process in process_list:
+        process.join()
