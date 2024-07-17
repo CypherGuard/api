@@ -1,5 +1,3 @@
-
-import threading
 from multiprocessing import Process
 
 from endpoints.decrypt_data import DecryptDataConsumer
