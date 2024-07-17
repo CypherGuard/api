@@ -18,6 +18,9 @@ class Consumer:
 
         self.channel = self.create_channel(queue)
 
+        self.response_queue = queue + '_response'
+        self.response_channel = self.create_channel(self.response_queue)
+
         self.channel.basic_consume(
             queue,
             self.callback,
@@ -31,6 +34,14 @@ class Consumer:
 
     def callback(ch, method, properties, body):
         print(f"[✅] Received #{ body }")
+
+    def response(self, body):
+        self.response_channel.basic_publish(
+            exchange='',
+            routing_key=self.response_queue,
+            body=body
+        )
+        return
 
     def run(self):
         try:

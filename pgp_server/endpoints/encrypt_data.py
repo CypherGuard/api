@@ -7,4 +7,6 @@ class EncryptDataConsumer(Consumer):
 
         def callback(self, ch, method, properties, body):
             print(f"[✅] Received #{ body }")
+
+            self.response('Encrypted data')
             return

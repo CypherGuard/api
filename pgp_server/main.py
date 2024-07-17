@@ -4,6 +4,7 @@ from multiprocessing import Process
 
 from endpoints.decrypt_data import DecryptDataConsumer
 from endpoints.encrypt_data import EncryptDataConsumer
+from endpoints.get_public_key import PublicKeyConsumer
 from utils.pgp_key import GPGKeyManager
 
 if __name__ == '__main__':
@@ -16,6 +17,7 @@ if __name__ == '__main__':
     print("[✅] Add the endpoints to the subscriber list")
     subscriber_list.append(EncryptDataConsumer())
     subscriber_list.append(DecryptDataConsumer())
+    subscriber_list.append(PublicKeyConsumer())
 
     process_list = []
     for sub in subscriber_list:
