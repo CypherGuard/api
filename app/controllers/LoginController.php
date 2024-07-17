@@ -31,7 +31,7 @@ class LoginController extends Controller
             $login['name'] = $crypt->decryptString($login['name']);
             $login['username'] = $crypt->decryptString($login['username']);
             $login['password'] = $crypt->decryptString($login['password']);
-            $login['url'] = $crypt->decryptArray(explode(',', $login['url']));
+            $login['url'] = $crypt->decryptString($login['url']);
             $login['totp'] = $crypt->decryptString($login['totp']);
             $login['notes'] = $crypt->decryptString($login['notes']);
             return $login;
@@ -65,7 +65,7 @@ class LoginController extends Controller
 
     public function store($vid)
     {
-        $data = request()->try(['name', 'username', 'password', 'url', 'notes']);
+        $data = request()->try(['name', 'username', 'password', 'url', 'notes', 'totp']);
 
         if (empty($data)) {
             return response()->json(['error' => 'No data provided'], 400);
@@ -77,26 +77,36 @@ class LoginController extends Controller
             return response()->json(['error' => 'Vault not found'], 404);
         }
 
-        $data = array_map(function($login) {
-            $crypt = new SymmetricEncryption();
-            $login['name'] = $crypt->encryptString($login['name']);
-            $login['username'] = $crypt->encryptString($login['username']);
-            $login['password'] = $crypt->encryptString($login['password']);
-            $login['url'] = $crypt->encryptString($login['url']);
-            $login['totp'] = $crypt->encryptString($login['totp']);
-            $login['notes'] = $crypt->encryptString($login['notes']);
-            return $login;
-        }, $data);
+        $crypt = new SymmetricEncryption();
+        $login = [
+            'name' => $crypt->encryptString($data['name']),
+            'username' => $crypt->encryptString($data['username']),
+            'password' => $crypt->encryptString($data['password']),
+            'url' => $crypt->encryptString($data['url']),
+            'notes' => $crypt->encryptString($data['notes']),
+            'totp' => $crypt->encryptString($data['totp'])
+        ];
 
-        $data['vault_id'] = $vid;
+        $login['vault_id'] = $vid;
 
-        $login = db()->insert('logins')->params($data)->execute();
+        db()->insert('logins')->params([
+            'name' => $login['name'],
+            'username' => $login['username'],
+            'password' => $login['password'],
+            'url' => $login['url'],
+            'notes' => $login['notes'],
+            'vault_id' => $login['vault_id'],
+            'totp' => $login['totp']
+        ])->execute();
 
-        if (!$login) {
+
+        $login_saved = db()->select('logins')->where(['id' => db()->lastInsertId()])->first();
+
+        if (!$login_saved) {
             return response()->json(['error' => 'An error occurred'], 400);
         }
 
-        return response()->json($login);
+        return response()->json($login_saved);
     }
 
     public function update($vid, $id)
