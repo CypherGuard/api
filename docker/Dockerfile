@@ -16,6 +16,8 @@ RUN apt-get install -y libpq-dev \
     && docker-php-ext-configure pgsql -with-pgsql=/usr/local/pgsql \
     && docker-php-ext-install pdo pdo_pgsql pgsql
 
+RUN docker-php-ext-install sockets
+
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
 RUN composer global require leafs/cli
@@ -32,5 +34,7 @@ RUN apt-get purge -y g++ \
 WORKDIR /var/www
 
 RUN chown -R www-data:www-data /var/www
+
+RUN composer install
 
 CMD ["apache2-foreground"]

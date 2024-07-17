@@ -9,6 +9,7 @@ services:
       - .:/var/www
     networks:
       - mq
+      - pgsql_db
 
   pgp_server:
     build:
@@ -31,6 +32,8 @@ services:
       POSTGRES_DB: ${DB_DATABASE}
     volumes:
       - ./pgdata:/var/lib/postgresql/data
+    networks:
+      - pgsql_db
 
   mailcatcher:
     container_name: mailcatcher_container
@@ -53,4 +56,6 @@ volumes:
 
 networks:
   mq:
+    driver: bridge
+  pgsql_db:
     driver: bridge
