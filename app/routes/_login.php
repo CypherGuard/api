@@ -8,6 +8,6 @@ app()->group('/vaults/{vid}/login', ['middleware' => [$middleware, 'handle'], fu
 //    app()->match('GET', '/{id}', "LoginController@show");
 //    app()->match('PUT', '/{id}', "LoginController@update");
 //    app()->match('DELETE', '/{id}', "LoginController@destroy");
-//    app()->match('POST', '/', "LoginController@store");
+    app()->match('POST', '/', "LoginController@store");
     app()->match('GET', '/', "LoginController@index");
 }]);

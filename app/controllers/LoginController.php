@@ -2,6 +2,7 @@
 
 namespace App\Controllers;
 
+use App\Utils\SymmetricEncryption;
 use Leaf\Http\Request;
 
 class LoginController extends Controller
@@ -12,6 +13,7 @@ class LoginController extends Controller
 
     public function index($vid)
     {
+
         $vault = db()->select('vaults')->where(['id' => $vid])->first();
 
         if (!$vault) {
@@ -23,6 +25,18 @@ class LoginController extends Controller
             ->where(['vault_id' => $vid])
             ->orderBy('id')
             ->fetchAll();
+
+        $logins = array_map(function($login) {
+            $crypt = new SymmetricEncryption();
+            $login['name'] = $crypt->decryptString($login['name']);
+            $login['username'] = $crypt->decryptString($login['username']);
+            $login['password'] = $crypt->decryptString($login['password']);
+            $login['url'] = $crypt->decryptArray(explode(',', $login['url']));
+            $login['totp'] = $crypt->decryptString($login['totp']);
+            $login['notes'] = $crypt->decryptString($login['notes']);
+            return $login;
+        }, $logins);
+
         return response()->json($logins);
     }
 
@@ -51,7 +65,6 @@ class LoginController extends Controller
 
     public function store($vid)
     {
-        $user_id = auth()->user()['id'];
         $data = request()->try(['name', 'username', 'password', 'url', 'notes']);
 
         if (empty($data)) {
@@ -64,8 +77,18 @@ class LoginController extends Controller
             return response()->json(['error' => 'Vault not found'], 404);
         }
 
+        $data = array_map(function($login) {
+            $crypt = new SymmetricEncryption();
+            $login['name'] = $crypt->encryptString($login['name']);
+            $login['username'] = $crypt->encryptString($login['username']);
+            $login['password'] = $crypt->encryptString($login['password']);
+            $login['url'] = $crypt->encryptString($login['url']);
+            $login['totp'] = $crypt->encryptString($login['totp']);
+            $login['notes'] = $crypt->encryptString($login['notes']);
+            return $login;
+        }, $data);
+
         $data['vault_id'] = $vid;
-        $data['owner_id'] = $user_id;
 
         $login = db()->insert('logins')->params($data)->execute();
 

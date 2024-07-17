@@ -35,6 +35,4 @@ WORKDIR /var/www
 
 RUN chown -R www-data:www-data /var/www
 
-RUN composer install
-
 CMD ["apache2-foreground"]

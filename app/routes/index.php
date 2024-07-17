@@ -12,8 +12,8 @@ function getDateToday(): string
 
 Leaf\Config::set([
     'log.enabled' => true,
-    'log.dir' => __DIR__ . '/logs/',
-    'log.file' => getDateToday() . '_crash_logs.log',
+    'log.dir' => __DIR__ . '/../logs/',
+    'log.file' => 'crash_logs.log',
 ]);
 
 /*
