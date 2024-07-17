@@ -10,11 +10,9 @@ if __name__ == '__main__':
     print("[✅] Init the PGP keys")
     GPGKeyManager()
 
-    print("keys")
-    print(GPGKeyManager().get_keys())
-
     print("[✅] Starting the server")
     subscriber_list = []
+
     print("[✅] Add the endpoints to the subscriber list")
     subscriber_list.append(EncryptDataConsumer())
     subscriber_list.append(DecryptDataConsumer())

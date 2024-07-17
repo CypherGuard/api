@@ -16,8 +16,13 @@ class GPGKeyManager:
     def __init__(self, name='John Doe', email='john.doe@example.com', passphrase='mysecurepassphrase'):
         if self.__initialized:
             return
+
+        self.name = name
+        self.email = email
+        self.passphrase = passphrase
+
         self.gpg = gnupg.GPG()  # Use default GPG home directory
-        self.public_key, self.private_key = self.generate_and_export_keys(name, email, passphrase)
+        self.public_key, self.private_key = self.generate_and_export_keys(self.name, self.email, self.passphrase)
         self.__initialized = True
 
     def generate_and_export_keys(self, name, email, passphrase):
@@ -60,7 +65,7 @@ class GPGKeyManager:
         :return: Tuple containing public key and private key.
         """
         public_key = self.gpg.export_keys(fingerprint)
-        private_key = self.gpg.export_keys(fingerprint, secret=True)
+        private_key = self.gpg.export_keys(keyids=fingerprint, secret=True, passphrase=self.passphrase)
         return public_key, private_key
 
     def get_keys(self):
