@@ -1,5 +1,6 @@
 from utils.consumer import Consumer
 
+
 class EncryptDataConsumer(Consumer):
 
         def __init__(self):

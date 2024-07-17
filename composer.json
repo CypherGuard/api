@@ -1,5 +1,6 @@
 {
     "name": "leafs/api",
+    "version": "1.0.0",
     "description": "A lightweight PHP MVC framework for rapid API development.",
     "type": "library",
     "keywords": [
@@ -29,7 +30,6 @@
         "leafs/cors": "*",
         "leafs/auth": "^2.3",
         "leafs/db": "^2.1",
-        "ramsey/uuid": "^4.7",
         "php-amqplib/php-amqplib": "^v3.7.0"
     },
     "require-dev": {
