@@ -10,6 +10,39 @@ The API uses JWT (JSON Web Token) for authentication. The token is passed in the
 
 ## Environment Variables
 
+## Docker
+
+### Services
+
+| Services name | Image                  | Ports                 | Network     | Volumes                          |
+|---------------|------------------------|-----------------------|-------------|----------------------------------|
+| Application   | leafphp/docker         | 8080:80               | mq pgsql_db | .:/var/www                       |
+| PgpServer     | Dockerfile             |                       | mq          | ./pgp_server:/pgp_server         |
+| Pgsql         | postgres:9.6           | 5432:5432             | pgsql_db    | ./pgsql:/var/lib/postgresql/data |
+| MailCatcher   | schickling/mailcatcher | 1080:1080 1025:1025   |             |                                  |
+| LavinMQ       | cloudamqp/lavinmq      | 5672:5672 15672:15672 | mq          |                                  |
+
+### Commands
+
+```bash
+docker-compose up -d
+```
+
+## Installation
+
+### Requirements
+
+- PHP 7.4
+- Composer
+
+### Steps
+
+1. Clone the repository
+2. Run `composer install`
+3. Create a `.env` file and set the environment variables
+4. Run `docker-compose up -d`
+5. Run `php leaf db:migrate`
+
 | Clé                | Valeur                                              |
 |--------------------|-----------------------------------------------------|
 | `APP_NAME`         | LEAF_MVC                                            |
@@ -106,39 +139,6 @@ The /vaults/{vaultId}/logins category is the login service. It provides the foll
 
 - /vaults/{vaultId}/logins
 - /vaults/{vaultId}/logins/{loginId}
-
-# Docker
-
-## Services
-
-| Services name | Image                  | Ports                 | Network     | Volumes                          |
-|---------------|------------------------|-----------------------|-------------|----------------------------------|
-| Application   | leafphp/docker         | 8080:80               | mq pgsql_db | .:/var/www                       |
-| PgpServer     | Dockerfile             |                       | mq          | ./pgp_server:/pgp_server         |
-| Pgsql         | postgres:9.6           | 5432:5432             | pgsql_db    | ./pgsql:/var/lib/postgresql/data |
-| MailCatcher   | schickling/mailcatcher | 1080:1080 1025:1025   |             |                                  |
-| LavinMQ       | cloudamqp/lavinmq      | 5672:5672 15672:15672 | mq          |                                  |
-
-## Commands
-
-```bash
-docker-compose up -d
-```
-
-# Installation
-
-## Requirements
-
-- PHP 7.4
-- Composer
-
-## Steps
-
-1. Clone the repository
-2. Run `composer install`
-3. Create a `.env` file and set the environment variables
-4. Run `docker-compose up -d`
-5. Run `php leaf db:migrate`
 
 # Acknowledgements
 
