@@ -102,7 +102,9 @@ class LoginController extends Controller
             'url' => $login['url'],
             'notes' => $login['notes'],
             'vault_id' => $login['vault_id'],
-            'totp' => $login['totp']
+            'totp' => $login['totp'],
+            'created_at' => date('Y-m-d H:i:s'),
+            'updated_at' => date('Y-m-d H:i:s')
         ])->execute();
 
 
@@ -159,7 +161,8 @@ class LoginController extends Controller
                 'password' => $login['password'],
                 'url' => $login['url'],
                 'notes' => $login['notes'],
-                'totp' => $login['totp']
+                'totp' => $login['totp'],
+                'updated_at' => date('Y-m-d H:i:s')
             ])
             ->where([
                 'id' => $id,
