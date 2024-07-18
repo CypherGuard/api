@@ -23,7 +23,7 @@ class CreateLogins extends Database
                 $table->string('notes');
                 $table->string('totp');
                 $table->timestamps();
-                $table->foreign('vault_id')->references('id')->on('vaults');
+                $table->foreign('vault_id')->references('id')->on('vaults')->onDelete('cascade');
             });
         endif;
 
