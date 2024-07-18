@@ -34,6 +34,8 @@ docker-compose up -d
 
 - PHP 7.4
 - Composer
+- Docker
+- Docker Compose
 
 ### Steps
 
